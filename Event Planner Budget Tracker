@@ -1,0 +1,166 @@
+#include <stdio.h> 
+#include <string.h> 
+ 
+#define MAX_EXPENSES 100 
+#define MAX_STR_LEN 50 
+ 
+// Structure to store each expense item 
+typedef struct { 
+    char name[MAX_STR_LEN];      // e.g. "Hall rent" 
+    char category[MAX_STR_LEN];  // e.g. "Venue" 
+    float amount;                // amount spent 
+} Expense; 
+ 
+// Function prototypes 
+void setBudget(float *budget); 
+void addExpense(Expense expenses[], int *count); 
+void viewExpenses(Expense expenses[], int count); 
+void showSummary(Expense expenses[], int count, float budget); 
+ 
+int main() { 
+    float totalBudget = 0.0f; 
+    Expense expenses[MAX_EXPENSES]; 
+    int expenseCount = 0; 
+    int choice; 
+ 
+    do { 
+        printf("\n==============================\n"); 
+        printf("  EVENT / WEDDING BUDGET TRACKER\n"); 
+ 
+ 
+        printf("==============================\n"); 
+        printf("1. Set / Update Total Budget\n"); 
+        printf("2. Add Expense\n"); 
+        printf("3. View All Expenses\n"); 
+        printf("4. Show Budget Summary\n"); 
+        printf("5. Exit\n"); 
+        printf("------------------------------\n"); 
+        printf("Enter your choice: "); 
+        scanf("%d", &choice); 
+ 
+        switch (choice) { 
+            case 1: 
+                setBudget(&totalBudget); 
+                break; 
+            case 2: 
+                addExpense(expenses, &expenseCount); 
+                break; 
+            case 3: 
+                viewExpenses(expenses, expenseCount); 
+                break; 
+            case 4: 
+                showSummary(expenses, expenseCount, totalBudget); 
+                break; 
+            case 5: 
+                printf("\nExiting... Thank you!\n"); 
+                break; 
+            default: 
+                printf("\nInvalid choice. Please try again.\n"); 
+        } 
+ 
+ 
+ 
+    } while (choice != 5); 
+ 
+    return 0; 
+} 
+ 
+// Function to set or update total budget 
+void setBudget(float *budget) { 
+    float newBudget; 
+ 
+    printf("\nEnter total budget for the event: "); 
+    scanf("%f", &newBudget); 
+ 
+    if (newBudget < 0) { 
+        printf("Budget cannot be negative. Budget not changed.\n"); 
+    } else { 
+        *budget = newBudget; 
+        printf("Total budget updated to: %.2f\n", *budget); 
+    } 
+} 
+ 
+// Function to add a new expense 
+void addExpense(Expense expenses[], int *count) { 
+    if (*count >= MAX_EXPENSES) { 
+        printf("\nCannot add more expenses. Limit reached.\n"); 
+        return; 
+    } 
+ 
+    Expense e; 
+ 
+    printf("\nEnter expense name (e.g. Hall Rent): "); 
+ 
+ 
+    getchar(); // clear newline from buffer 
+    fgets(e.name, MAX_STR_LEN, stdin); 
+    // remove trailing newline 
+    e.name[strcspn(e.name, "\n")] = '\0'; 
+ 
+    printf("Enter expense category (e.g. Venue, Food, Decoration): "); 
+    fgets(e.category, MAX_STR_LEN, stdin); 
+    e.category[strcspn(e.category, "\n")] = '\0'; 
+ 
+    printf("Enter amount spent: "); 
+    scanf("%f", &e.amount); 
+ 
+    if (e.amount < 0) { 
+        printf("Amount cannot be negative. Expense not added.\n"); 
+        return; 
+    } 
+ 
+    expenses[*count] = e; 
+    (*count)++; 
+ 
+    printf("\nExpense added successfully.\n"); 
+} 
+ 
+// Function to display all expenses 
+void viewExpenses(Expense expenses[], int count) { 
+    if (count == 0) { 
+        printf("\nNo expenses added yet.\n"); 
+        return; 
+    } 
+ 
+ 
+ 
+    printf("\n----------- EXPENSE LIST -----------\n"); 
+    printf("%-5s %-20s %-15s %-10s\n", "No.", "Name", "Category", "Amount"); 
+    printf("------------------------------------\n"); 
+ 
+    for (int i = 0; i < count; i++) { 
+        printf("%-5d %-20s %-15s %-10.2f\n", 
+               i + 1, 
+               expenses[i].name, 
+               expenses[i].category, 
+               expenses[i].amount); 
+    } 
+} 
+ 
+// Function to show summary of budget vs expenses 
+void showSummary(Expense expenses[], int count, float budget) { 
+    float totalSpent = 0.0f; 
+ 
+    for (int i = 0; i < count; i++) { 
+        totalSpent += expenses[i].amount; 
+    } 
+ 
+    printf("\n----------- BUDGET SUMMARY -----------\n"); 
+    printf("Total Budget      : %.2f\n", budget); 
+    printf("Total Spent       : %.2f\n", totalSpent); 
+    printf("Remaining Budget  : %.2f\n", budget - totalSpent); 
+ 
+    if (budget == 0) { 
+        printf("\nNOTE: Budget is 0. Please set the budget first.\n"); 
+    } 
+ 
+ 
+ 
+    if (totalSpent > budget) { 
+        printf("\nWARNING: You have exceeded the budget by %.2f!\n", totalSpent - budget); 
+    } else if (totalSpent == budget && budget != 0) { 
+        printf("\nINFO: You have exactly used the full budget.\n"); 
+    } else if (budget > 0) { 
+        printf("\nGood job! You are within the budget.\n"); 
+    } 
+}
